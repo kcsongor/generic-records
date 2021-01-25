@@ -33,7 +33,7 @@ import GHC.Generics
 import GHC.TypeLits
 import Data.Coerce
 
-data family Param :: Nat -> j -> k
+data family Param :: Nat -> j -> Type
 
 newtype instance Param n (a :: Type)
   = StarParam { getStarParam :: a}

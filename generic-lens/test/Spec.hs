@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -O -fplugin Test.Inspection.Plugin #-}
+{-# OPTIONS_GHC -fplugin Test.Inspection.Plugin #-}
 {-# OPTIONS_GHC -dsuppress-all #-}
 
 {-# OPTIONS_GHC -funfolding-use-threshold=150 #-}

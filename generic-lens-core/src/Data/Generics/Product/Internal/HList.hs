@@ -1,5 +1,6 @@
 {-# LANGUAGE AllowAmbiguousTypes    #-}
 {-# LANGUAGE ConstraintKinds        #-}
+{-# LANGUAGE CPP                    #-}
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE GADTs                  #-}
@@ -41,6 +42,10 @@ import GHC.Generics
 import Data.Profunctor.Indexed
 import Data.Generics.Internal.Profunctor.Lens
 import Data.Generics.Internal.Profunctor.Iso
+
+#if __GLASGOW_HASKELL__ == 802
+import Data.Semigroup (Semigroup(..))
+#endif
 
 data HList (as :: [Type]) where
   Nil :: HList '[]

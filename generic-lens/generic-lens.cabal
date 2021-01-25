@@ -14,7 +14,7 @@ maintainer:           kiss.csongor.kiss@gmail.com
 category:             Generics, Records, Lens
 build-type:           Simple
 cabal-version:        >= 1.10
-Tested-With:          GHC == 8.4.1, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.1, GHC == 8.10.1
+Tested-With:          GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.3, GHC == 8.10.1
 
 extra-source-files:   examples/StarWars.hs
                     , examples/Examples.hs
@@ -44,7 +44,7 @@ library
                     , Data.Generics.Internal.VL.Prism
                     , Data.Generics.Internal.VL.Iso
 
-  build-depends:      base        >= 4.11 && < 5
+  build-depends:      base        >= 4.10 && < 5
                     , generic-lens-core == 2.0.0.0
                     , profunctors
                     , text        >= 1.2 && < 1.3
@@ -59,7 +59,7 @@ test-suite inspection-tests
   main-is:            Spec.hs
   other-modules:      Util Test24 Test88 Test25 Test40 Test62 Test63 CustomChildren
 
-  build-depends:      base          >= 4.11 && <= 5.0
+  build-depends:      base          >= 4.10 && <= 5.0
                     , generic-lens
                     , lens
                     , profunctors
@@ -74,7 +74,7 @@ test-suite generic-lens-bifunctor
   hs-source-dirs:     test
   main-is:            Bifunctor.hs
 
-  build-depends:      base          >= 4.11 && <= 5.0
+  build-depends:      base          >= 4.10 && <= 5.0
                     , generic-lens
                     , lens
                     , HUnit
@@ -87,7 +87,7 @@ test-suite generic-lens-syb-tree
   hs-source-dirs:     test/syb
   main-is:            Tree.hs
 
-  build-depends:      base          >= 4.11 && <= 5.0
+  build-depends:      base          >= 4.10 && <= 5.0
                     , generic-lens
                     , lens
                     , profunctors
@@ -97,6 +97,10 @@ test-suite generic-lens-syb-tree
   ghc-options:        -Wall
 
 test-suite doctests
+  -- type signatures have different order of constraints with 8.2
+  if impl(ghc < 8.4)
+    buildable: False
+
   default-language:   Haskell2010
   type:               exitcode-stdio-1.0
   ghc-options:        -threaded

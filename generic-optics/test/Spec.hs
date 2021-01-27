@@ -9,6 +9,7 @@
 {-# LANGUAGE DeriveGeneric                   #-}
 {-# LANGUAGE DuplicateRecordFields           #-}
 {-# LANGUAGE ExistentialQuantification       #-}
+{-# LANGUAGE LambdaCase                      #-}
 {-# LANGUAGE RankNTypes                      #-}
 {-# LANGUAGE ScopedTypeVariables             #-}
 {-# LANGUAGE TypeApplications                #-}
@@ -29,8 +30,9 @@ import Optics.Core
 -- This is sufficient at we only want to test that they typecheck
 import Test24 ()
 import Test25 ()
+import Test88 ()
 
--- import CustomChildren (customTypesTest)
+import CustomChildren (customTypesTest)
 
 main :: IO ()
 main = do
@@ -67,16 +69,11 @@ data Record5 = MkRecord5
   , fieldF :: Int
   } deriving Generic
 
--- I monomorphised these for now, as for some reason the type
--- variables got quantified differently in the handwritten code
--- compared to the generic. Otherwise identical
-typeChangingManualInst :: Lens (Record3 Int) (Record3 Bool) Int Bool
-typeChangingManualInst = lens (\(MkRecord3 a _) -> a) (\(MkRecord3 _ b) a' -> MkRecord3 a' b)
+typeChangingManual :: Lens (Record3 a) (Record3 b) a b
+typeChangingManual = lens (\(MkRecord3 a _) -> a) (\(MkRecord3 _ b) a' -> MkRecord3 a' b)
 
-typeChangingManualCompose :: Lens (Record3 (Record3 Int)) (Record3 (Record3 Bool)) Int Bool
-typeChangingManualCompose
-  = lens (\(MkRecord3 a _) -> a) (\(MkRecord3 _ b) a' -> MkRecord3 a' b)
-  % lens (\(MkRecord3 a _) -> a) (\(MkRecord3 _ b) a' -> MkRecord3 a' b)
+typeChangingManualCompose :: Lens (Record3 (Record3 a)) (Record3 (Record3 b)) a b
+typeChangingManualCompose = typeChangingManual % typeChangingManual
 
 newtype L s a = L (Lens' s a)
 
@@ -88,12 +85,12 @@ intTraversalDerived :: Traversal' Record5 Int
 intTraversalDerived = types
 
 fieldALensManual :: Lens' Record Int
-fieldALensManual =
-    lens (\(MkRecord a _) -> a) $ \(MkRecord _ b) x -> MkRecord x b
+fieldALensManual = lens (\(MkRecord a _) -> a) $ \(MkRecord _ b) x -> MkRecord x b
 
 subtypeLensManual :: Lens' Record Record2
-subtypeLensManual =
-  lens (\s1 -> MkRecord2 (case s1 of MkRecord a _ -> a)) (\(MkRecord _ b) ds -> MkRecord (case ds of MkRecord2 g1 -> g1) b)
+subtypeLensManual = lens
+  (\s1 -> MkRecord2 (case s1 of MkRecord a _ -> a))
+  (\(MkRecord _ b) ds -> MkRecord (case ds of MkRecord2 g1 -> g1) b)
 
 data Sum1 = A Char | B Int | C () | D () deriving (Generic, Show)
 data Sum2 = A2 Char | B2 Int deriving (Generic, Show)
@@ -108,28 +105,28 @@ sum3Param0Derived :: Traversal (Sum3 a b xxx) (Sum3 a b yyy) xxx yyy
 sum3Param0Derived = param @0
 
 sum3Param0Manual :: Traversal (Sum3 a b xxx) (Sum3 a b yyy) xxx yyy
-sum3Param0Manual = traversalVL go where
-    go _ (A3 a1 a2)         = pure (A3 a1 a2)
-    go _ (B3 s b1 a1 a2 b2) = pure (B3 s b1 a1 a2 b2)
-    go f (C3 c a i)         = pure (\c' -> C3 c' a i) <*> f c
+sum3Param0Manual = traversalVL $ \f -> \case
+  A3 a1 a2         -> pure (A3 a1 a2)
+  B3 s b1 a1 a2 b2 -> pure (B3 s b1 a1 a2 b2)
+  C3 c a i         -> pure (\c' -> C3 c' a i) <*> f c
 
 sum3Param1Derived :: Traversal (Sum3 a xxx c) (Sum3 a yyy c) xxx yyy
 sum3Param1Derived = param @1
 
 sum3Param1Manual :: Traversal (Sum3 a xxx c) (Sum3 a yyy c) xxx yyy
-sum3Param1Manual = traversalVL go where
-    go _ (A3 a1 a2)         = pure (A3 a1 a2)
-    go f (B3 s b1 a1 a2 b2) = pure (\b1' b2' -> B3 s b1' a1 a2 b2') <*> f b1 <*> f b2
-    go _ (C3 c a i)         = pure (C3 c a i)
+sum3Param1Manual = traversalVL $ \f -> \case
+  A3 a1 a2         -> pure (A3 a1 a2)
+  B3 s b1 a1 a2 b2 -> pure (\b1' b2' -> B3 s b1' a1 a2 b2') <*> f b1 <*> f b2
+  C3 c a i         -> pure (C3 c a i)
 
 sum3Param2Derived :: Traversal (Sum3 xxx b c) (Sum3 yyy b c) xxx yyy
 sum3Param2Derived = param @2
 
 sum3Param2Manual :: Traversal (Sum3 xxx b c) (Sum3 yyy b c) xxx yyy
-sum3Param2Manual = traversalVL go where
-    go f (A3 a1 a2)         = pure (\a1' a2' -> A3 a1' a2') <*> f a1 <*> f a2
-    go f (B3 s b1 a1 a2 b2) = pure (\a1' a2' -> B3 s b1 a1' a2' b2) <*> f a1 <*> f a2
-    go f (C3 c a i)         = pure (\a' -> C3 c a' i) <*> f a
+sum3Param2Manual = traversalVL $ \f -> \case
+  A3 a1 a2         -> pure (\a1' a2' -> A3 a1' a2') <*> f a1 <*> f a2
+  B3 s b1 a1 a2 b2 -> pure (\a1' a2' -> B3 s b1 a1' a2' b2) <*> f a1 <*> f a2
+  C3 c a i         -> pure (\a' -> C3 c a' i) <*> f a
 
 sum1PrismManual :: Prism Sum1 Sum1 Int Int
 sum1PrismManual = prism g f
@@ -204,16 +201,16 @@ fieldALensPos_ = position_ @1
 subtypeLensGeneric :: Lens' Record Record2
 subtypeLensGeneric = super
 
-typeChangingGeneric :: Lens (Record3 Int) (Record3 Bool) Int Bool
+typeChangingGeneric :: Lens (Record3 a) (Record3 b) a b
 typeChangingGeneric = field @"fieldA"
 
-typeChangingGenericPos :: Lens (Record3 Int) (Record3 Bool) Int Bool
+typeChangingGenericPos :: Lens (Record3 a) (Record3 b) a b
 typeChangingGenericPos = position @1
 
-typeChangingGenericCompose :: Lens (Record3 (Record3 Int)) (Record3 (Record3 Bool)) Int Bool
+typeChangingGenericCompose :: Lens (Record3 (Record3 a)) (Record3 (Record3 b)) a b
 typeChangingGenericCompose = field @"fieldA" % field @"fieldA"
 
-typeChangingGenericCompose_ :: Lens (Record3 (Record3 Int)) (Record3 (Record3 Bool)) Int Bool
+typeChangingGenericCompose_ :: Lens (Record3 (Record3 a)) (Record3 (Record3 b)) a b
 typeChangingGenericCompose_ = field_ @"fieldA" % field_ @"fieldA"
 
 sum1PrismB :: Prism Sum1 Sum1 Int Int
@@ -242,16 +239,16 @@ data SumOfProducts =
 
 tests :: Test
 tests = TestList $ map mkHUnitTest
-  [$(inspectTest $ 'fieldALensManual          === 'fieldALensName)
+  [ $(inspectTest $ 'fieldALensManual          === 'fieldALensName)
   , $(inspectTest $ 'fieldALensManual          === 'fieldALensName_)
   , $(inspectTest $ 'fieldALensManual          === 'fieldALensType)
   , $(inspectTest $ 'fieldALensManual          === 'fieldALensPos)
   , $(inspectTest $ 'fieldALensManual          === 'fieldALensPos_)
   , $(inspectTest $ 'subtypeLensManual         === 'subtypeLensGeneric)
-  , $(inspectTest $ 'typeChangingManualInst    === 'typeChangingGeneric)
-  , $(inspectTest $ 'typeChangingManualInst    === 'typeChangingGenericPos)
-  , $(inspectTest $ 'typeChangingManualCompose === 'typeChangingGenericCompose)
-  , $(inspectTest $ 'typeChangingManualCompose === 'typeChangingGenericCompose_)
+  , $(inspectTest $ 'typeChangingManual        ==- 'typeChangingGeneric)
+  , $(inspectTest $ 'typeChangingManual        ==- 'typeChangingGenericPos)
+  , $(inspectTest $ 'typeChangingManualCompose ==- 'typeChangingGenericCompose)
+  , $(inspectTest $ 'typeChangingManualCompose ==- 'typeChangingGenericCompose_)
   , $(inspectTest $ 'sum1PrismManual           === 'sum1PrismB)
   , $(inspectTest $ 'subtypePrismManual        === 'subtypePrismGeneric)
   , $(inspectTest $ 'sum2PrismManualChar       === 'sum2TypePrismChar)
@@ -263,4 +260,6 @@ tests = TestList $ map mkHUnitTest
   , $(inspectTest $ 'sum3Param0Manual          === 'sum3Param0Derived)
   , $(inspectTest $ 'sum3Param1Manual          === 'sum3Param1Derived)
   , $(inspectTest $ 'sum3Param2Manual          === 'sum3Param2Derived)
+  ] ++
+  [ customTypesTest
   ]

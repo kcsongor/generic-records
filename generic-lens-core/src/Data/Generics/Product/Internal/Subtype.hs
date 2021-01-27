@@ -39,11 +39,11 @@ import Data.Generics.Product.Internal.GLens
 import Data.Kind (Type)
 import GHC.Generics
 import GHC.TypeLits (Symbol)
-import Data.Generics.Internal.Profunctor.Lens (view)
 
 import GHC.TypeLits (TypeError, ErrorMessage (..))
 import Data.Kind (Constraint)
 import Data.Generics.Internal.Errors
+import Data.Generics.Internal.VL.Lens
 
 type Context a b
   = ( Generic a

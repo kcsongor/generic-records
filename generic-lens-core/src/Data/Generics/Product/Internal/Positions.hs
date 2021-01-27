@@ -49,8 +49,7 @@ import Data.Coerce
 import Data.Generics.Internal.Families
 import Data.Generics.Product.Internal.GLens
 import Data.Generics.Internal.Errors
-import Data.Generics.Internal.Profunctor.Lens
-import Data.Generics.Internal.Profunctor.Iso
+import Data.Generics.Internal.VL.Lens
 
 type Context' (i :: Nat) s a
   = ( Generic s
@@ -97,11 +96,11 @@ type Context0 i s t a b
     )
 
 derived0 :: forall i s t a b. Context0 i s t a b => Lens s t a b
-derived0 = (repIso . coerced @(CRep s) @(CRep t) . glens @(HasTotalPositionPSym i))
+derived0 = (lensRep . coerced @(CRep s) @(CRep t) . glens @(HasTotalPositionPSym i))
 {-# INLINE derived0 #-}
 
 derived' :: forall i s a. Context' i s a => Lens s s a a
-derived' = (repIso . coerced @(CRep s) @(CRep s) . glens @(HasTotalPositionPSym i))
+derived' = (lensRep . coerced @(CRep s) @(CRep s) . glens @(HasTotalPositionPSym i))
 {-# INLINE derived' #-}
 
 type family ErrorUnless (i :: Nat) (s :: Type) (hasP :: Bool) :: Constraint where
@@ -124,8 +123,8 @@ type instance Eval (HasTotalPositionPSym t) tt = HasTotalPositionP t tt
 -- forall x. Coercible (cs x) (Rep s x), but this requires quantified
 -- constraints
 coerced :: forall s t s' t' x. (Coercible t t', Coercible s s')
-        => Iso (s' x) (t' x) (s x) (t x)
-coerced = iso coerce coerce
+        => Lens (s' x) (t' x) (s x) (t x)
+coerced f s = coerce <$> f (coerce s)
 {-# INLINE coerced #-}
 
 --------------------------------------------------------------------------------  

@@ -119,7 +119,7 @@ setPosition :: forall i s a. HasPosition' i s a => a -> s -> s
 setPosition = set (position' @i)
 
 instance Core.Context' i s a => HasPosition' i s a where
-  position' = Optic (Core.derived' @i)
+  position' = normaliseLens (lensVL (Core.derived' @i))
   {-# INLINE position' #-}
 
 instance (Core.Context i s t a b , HasPosition0 i s t a b) => HasPosition i s t a b where
@@ -140,5 +140,5 @@ instance {-# OVERLAPPING #-} HasPosition_ f (Void1 a) (Void1 b) a b where
   position_ = undefined
 
 instance Core.Context0 i s t a b => HasPosition0 i s t a b where
-  position0 = normaliseLens (Optic (Core.derived0 @i))
+  position0 = normaliseLens (lensVL (Core.derived0 @i))
   {-# INLINE position0 #-}

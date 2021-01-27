@@ -38,9 +38,8 @@ module Data.Generics.Product.Fields
   , setField
   ) where
 
-import "this" Data.Generics.Internal.VL.Lens as VL
-
 import "generic-lens-core" Data.Generics.Internal.Void
+import qualified "generic-lens-core" Data.Generics.Internal.VL.Lens as VL
 import qualified "generic-lens-core" Data.Generics.Product.Internal.Fields as Core
 
 import GHC.TypeLits (Symbol)

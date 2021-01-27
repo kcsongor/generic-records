@@ -26,10 +26,9 @@ module Data.Generics.Product.Typed
     HasType (..)
   ) where
 
-import "this" Data.Generics.Internal.VL.Lens as VL
-
-import qualified "generic-lens-core" Data.Generics.Product.Internal.Typed as Core
 import "generic-lens-core" Data.Generics.Internal.Void
+import qualified "generic-lens-core" Data.Generics.Internal.VL.Lens as VL
+import qualified "generic-lens-core" Data.Generics.Product.Internal.Typed as Core
 
 -- $setup
 -- == /Running example:/
@@ -90,7 +89,7 @@ class HasType a s where
 
   -- |Get field at type.
   getTyped :: s -> a
-  getTyped s = s ^. typed @a
+  getTyped = VL.view (typed @a)
 
   -- |Set field at type.
   setTyped :: a -> s -> s

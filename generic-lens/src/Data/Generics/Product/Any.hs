@@ -30,7 +30,7 @@ module Data.Generics.Product.Any
     HasAny (..)
   ) where
 
-import "this" Data.Generics.Internal.VL.Lens
+import "generic-lens-core" Data.Generics.Internal.VL.Lens
 import "this" Data.Generics.Product.Fields
 import "this" Data.Generics.Product.Positions
 import "this" Data.Generics.Product.Typed

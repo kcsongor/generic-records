@@ -171,5 +171,5 @@ instance {-# OVERLAPPING #-} HasField_ f (Void1 a) (Void1 b) a b where
   field_ = undefined
 
 instance Core.Context0 field s t a b => HasField0 field s t a b where
-  field0 = normaliseLens (Optic (Core.derived @field))
+  field0 = normaliseLens (lensVL (Core.derived @field))
   {-# INLINE field0 #-}

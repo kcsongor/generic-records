@@ -27,8 +27,7 @@ import Data.Kind    (Constraint, Type)
 import GHC.Generics
 import GHC.TypeLits (Symbol, ErrorMessage(..), TypeError)
 import Data.Generics.Internal.Errors
-import Data.Generics.Internal.Profunctor.Lens
-import Data.Generics.Internal.Profunctor.Iso
+import Data.Generics.Internal.VL.Lens
 
 -- Full context
 class Context (field :: Symbol) s t a b | s field -> a, t field -> b, s field b -> t, t field a -> s
@@ -75,7 +74,7 @@ type Context0 field s t a b
     )
 
 derived :: forall field s t a b. Context0 field s t a b => Lens s t a b
-derived = repIso . glens @(HasTotalFieldPSym field)
+derived = lensRep . glens @(HasTotalFieldPSym field)
 {-# INLINE derived #-}
 
 type family ErrorUnless (field :: Symbol) (s :: Type) (stat :: TypeStat) :: Constraint where

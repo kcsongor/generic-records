@@ -23,8 +23,7 @@ import Data.Generics.Product.Internal.GLens
 import Data.Kind    (Constraint, Type)
 import GHC.Generics (Generic (Rep))
 import GHC.TypeLits (TypeError, ErrorMessage (..))
-import Data.Generics.Internal.Profunctor.Lens (Lens)
-import Data.Generics.Internal.Profunctor.Iso (repIso)
+import Data.Generics.Internal.VL.Lens
 import Data.Generics.Internal.Errors
 
 type Context a s = ( Generic s
@@ -36,7 +35,7 @@ type Context a s = ( Generic s
   )
 
 derived :: forall a s. Context a s => Lens s s a a
-derived = repIso . glens @(HasTotalTypePSym a)
+derived = lensRep . glens @(HasTotalTypePSym a)
 {-# INLINE derived #-}
 
 type family ErrorUnlessOne (a :: Type) (s :: Type) (stat :: TypeStat) :: Constraint where

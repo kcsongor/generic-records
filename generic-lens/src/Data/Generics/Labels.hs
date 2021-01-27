@@ -38,7 +38,7 @@ module Data.Generics.Labels
 import "this" Data.Generics.Product
 import "this" Data.Generics.Sum
 
-import "this" Data.Generics.Internal.VL.Lens  (Lens)
+import "generic-lens-core" Data.Generics.Internal.VL.Lens  (Lens)
 import "this" Data.Generics.Internal.VL.Prism (Prism)
 
 import Data.Profunctor    (Choice)

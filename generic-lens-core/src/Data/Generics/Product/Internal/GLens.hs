@@ -34,11 +34,10 @@ module Data.Generics.Product.Internal.GLens
   , Eval
   ) where
 
-import Data.Generics.Internal.Profunctor.Lens (Lens, choosing, first, second)
-import Data.Generics.Internal.Profunctor.Iso (kIso, sumIso, mIso)
-
 import Data.Kind    (Type)
 import GHC.Generics
+
+import Data.Generics.Internal.VL.Lens
 
 type Pred = TyFun (Type -> Type) (Maybe Type)
 
@@ -58,15 +57,15 @@ instance GProductLens (Eval pred l) pred l r l' r' a b
   {-# INLINE glens #-}
 
 instance (GLens pred l l' a b, GLens pred r r' a b) =>  GLens pred (l :+: r) (l' :+: r') a b where
-  glens = sumIso . choosing (glens @pred) (glens @pred)
+  glens = choosing (glens @pred) (glens @pred)
   {-# INLINE glens #-}
 
 instance GLens pred (K1 r a) (K1 r b) a b where
-  glens = kIso
+  glens = lensK1
   {-# INLINE glens #-}
 
 instance (GLens pred f g a b) => GLens pred (M1 m meta f) (M1 m meta g) a b where
-  glens = mIso . glens @pred
+  glens = lensM1 . glens @pred
   {-# INLINE glens #-}
 
 class GProductLens (left :: Maybe Type) (pred :: Pred) l r l' r' a b | pred l r -> a, pred l' r' -> b where

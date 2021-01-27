@@ -34,9 +34,8 @@ module Data.Generics.Product.Subtype
   ) where
 
 
-import "this" Data.Generics.Internal.VL.Lens as VL
-
 import "generic-lens-core" Data.Generics.Internal.Void
+import qualified "generic-lens-core" Data.Generics.Internal.VL.Lens as VL
 import qualified "generic-lens-core" Data.Generics.Product.Internal.Subtype as Core
 
 import GHC.Generics (Generic (to, from) )
@@ -97,7 +96,7 @@ class Subtype sup sub where
   -- ... address
   -- ...
   upcast :: sub -> sup
-  upcast s = s ^. super @sup
+  upcast = VL.view (super @sup)
   {-# INLINE upcast #-}
 
   -- |Plug a smaller structure into a larger one

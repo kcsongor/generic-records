@@ -42,9 +42,8 @@ module Data.Generics.Product.Positions
   , setPosition
   ) where
 
-import "this" Data.Generics.Internal.VL.Lens as VL
-
 import "generic-lens-core" Data.Generics.Internal.Void
+import qualified "generic-lens-core" Data.Generics.Internal.VL.Lens as VL
 import qualified "generic-lens-core" Data.Generics.Product.Internal.Positions as Core
 
 import GHC.TypeLits   (Nat)
@@ -112,7 +111,7 @@ class HasPosition0 (i :: Nat) s t a b where
 -- >>> getPosition @2 human
 -- 50
 getPosition :: forall i s a. HasPosition' i s a => s -> a
-getPosition s = s ^. position' @i
+getPosition = VL.view (position' @i)
 
 -- |
 -- >>> setPosition @2 60 human

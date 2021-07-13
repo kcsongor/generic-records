@@ -36,6 +36,7 @@ type Iso' s a = Iso s s a a
 -- | A type and its generic representation are isomorphic
 repIso :: (Generic a, Generic b) => Iso a b (Rep a x) (Rep b x)
 repIso = iso from to
+{-# INLINE repIso #-}
 
 -- | 'M1' is just a wrapper around `f p`
 --mIso :: Iso' (M1 i c f p) (f p)
@@ -61,9 +62,11 @@ sumIso = iso back forth
 
 prodIso :: Iso ((a :*: b) x) ((a' :*: b') x) (a x, b x) (a' x, b' x)
 prodIso = iso (\(a :*: b) -> (a, b)) (\(a, b) -> (a :*: b))
+{-# INLINE prodIso #-}
 
 assoc3 :: Iso ((a, b), c) ((a', b'), c') (a, (b, c)) (a', (b', c'))
 assoc3 = iso (\((a, b), c) -> (a, (b, c))) (\(a, (b, c)) -> ((a, b), c))
+{-# INLINE assoc3 #-}
 
 --------------------------------------------------------------------------------
 -- Iso stuff
@@ -79,8 +82,26 @@ iso sa bt = dimap sa bt
 withIso :: Iso s t a b -> ((s -> a) -> (b -> t) -> r) -> r
 withIso ai k = case ai (Exchange id id) of
   Exchange sa bt -> k sa bt
+{-# INLINE withIso #-}
 
 pairing :: Iso s t a b -> Iso s' t' a' b' -> Iso (s, s') (t, t') (a, a') (b, b')
-pairing f g = withIso f $ \ sa bt -> withIso g $ \s'a' b't' ->
-  iso (bmap sa s'a') (bmap bt b't')
-  where bmap f' g' (a, b) = (f' a, g' b)
+pairing f g = withIso f $ \sa bt -> withIso g $ \s'a' b't' ->
+  iso (bimap sa s'a') (bimap bt b't')
+  where
+    -- Data.Bifunctor.bimap is too lazy
+    bimap f' g' (a, b) = (f' a, g' b)
+{-# INLINE pairing #-}
+
+isoFirst :: Iso s t a b -> Iso (s, x) (t, y) (a, x) (b, y)
+isoFirst o = withIso o $ \sa bt -> iso (first sa) (first bt)
+  where
+    -- Data.Bifunctor.first is too lazy
+    first f (a, b) = (f a, b)
+{-# INLINE isoFirst #-}
+
+isoSecond :: Iso s t a b -> Iso (x, s) (y, t) (x, a) (y, b)
+isoSecond o = withIso o $ \sa bt -> iso (second sa) (second bt)
+  where
+    -- Data.Bifunctor.second is too lazy
+    second f (a, b) = (a, f b)
+{-# INLINE isoSecond #-}

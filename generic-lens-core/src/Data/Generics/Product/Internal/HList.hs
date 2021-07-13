@@ -120,9 +120,9 @@ instance
   Appending as bs cs as' bs' cs' -- as ++ bs == cs
   => Appending (a ': as) bs (a ': cs) (a' ': as') bs' (a' ': cs') where
   appending
-    = pairing (fromIso consing) id -- ((a, as), bs)
+    = isoFirst (fromIso consing)   -- ((a, as), bs)
     . assoc3                       -- (a, (as, bs))
-    . pairing id appending         -- (a, cs)
+    . isoSecond appending          -- (a, cs)
     . consing                      -- (a : cs)
 
 singleton :: Iso a b (HList '[a]) (HList '[ b])
@@ -165,12 +165,16 @@ instance ListTuple () () '[] '[]
   where
   tupleToList _ = Nil
   listToTuple _ = ()
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple a a' '[a] '[a'] where
   tupleToList a
     = a :> Nil
   listToTuple (a :> Nil)
     = a
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1) (a2, b2)
@@ -180,6 +184,8 @@ instance ListTuple
     = a :> b :> Nil
   listToTuple (a :> b :> Nil)
     = (a, b)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1) (a2, b2, c2)
@@ -189,6 +195,8 @@ instance ListTuple
     = a :> b :> c :> Nil
   listToTuple (a :> b :> c :> Nil)
     = (a, b, c)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1) (a2, b2, c2, d2)
@@ -198,6 +206,8 @@ instance ListTuple
     = a :> b :> c :> d:> Nil
   listToTuple (a :> b :> c :> d :> Nil)
     = (a, b, c, d)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1) (a2, b2, c2, d2, e2)
@@ -207,6 +217,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> Nil
   listToTuple (a :> b :> c :> d :> e :> Nil)
     = (a, b, c, d, e)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1, f1) (a2, b2, c2, d2, e2, f2)
@@ -216,6 +228,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> f :> Nil
   listToTuple (a :> b :> c :> d :> e :> f :> Nil)
     = (a, b, c, d, e, f)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1, f1, g1) (a2, b2, c2, d2, e2, f2, g2)
@@ -225,6 +239,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> f :> g :> Nil
   listToTuple (a :> b :> c :> d :> e :> f :> g :> Nil)
     = (a, b, c, d, e, f, g)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1, f1, g1, h1) (a2, b2, c2, d2, e2, f2, g2, h2)
@@ -234,6 +250,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> f :> g :> h :> Nil
   listToTuple (a :> b :> c :> d :> e :> f :> g :> h :> Nil)
     = (a, b, c, d, e, f, g, h)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1, f1, g1, h1, j1) (a2, b2, c2, d2, e2, f2, g2, h2, j2)
@@ -243,6 +261,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> f :> g :> h :> j :> Nil
   listToTuple (a :> b :> c :> d :> e :> f :> g :> h :> j :> Nil)
     = (a, b, c, d, e, f, g, h, j)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1, f1, g1, h1, j1, k1) (a2, b2, c2, d2, e2, f2, g2, h2, j2, k2)
@@ -252,6 +272,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> f :> g :> h :> j :> k :> Nil
   listToTuple (a :> b :> c :> d :> e :> f :> g :> h :> j :> k :> Nil)
     = (a, b, c, d, e, f, g, h, j, k)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1, f1, g1, h1, j1, k1, l1) (a2, b2, c2, d2, e2, f2, g2, h2, j2, k2, l2)
@@ -261,6 +283,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> f :> g :> h :> j :> k :> l :> Nil
   listToTuple (a :> b :> c :> d :> e :> f :> g :> h :> j :> k :> l :> Nil)
     = (a, b, c, d, e, f, g, h, j, k, l)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1, f1, g1, h1, j1, k1, l1, m1) (a2, b2, c2, d2, e2, f2, g2, h2, j2, k2, l2, m2)
@@ -270,6 +294,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> f :> g :> h :> j :> k :> l :> m :> Nil
   listToTuple (a :> b :> c :> d :> e :> f :> g :> h :> j :> k :> l :> m :> Nil)
     = (a, b, c, d, e, f, g, h, j, k, l, m)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1, f1, g1, h1, j1, k1, l1, m1, n1) (a2, b2, c2, d2, e2, f2, g2, h2, j2, k2, l2, m2, n2)
@@ -279,6 +305,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> f :> g :> h :> j :> k :> l :> m :> n :> Nil
   listToTuple (a :> b :> c :> d :> e :> f :> g :> h :> j :> k :> l :> m :> n :> Nil)
     = (a, b, c, d, e, f, g, h, j, k, l, m, n)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1, f1, g1, h1, j1, k1, l1, m1, n1, o1) (a2, b2, c2, d2, e2, f2, g2, h2, j2, k2, l2, m2, n2, o2)
@@ -288,6 +316,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> f :> g :> h :> j :> k :> l :> m :> n :> o :> Nil
   listToTuple (a :> b :> c :> d :> e :> f :> g :> h :> j :> k :> l :> m :> n :> o :> Nil)
     = (a, b, c, d, e, f, g, h, j, k, l, m, n, o)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1, f1, g1, h1, j1, k1, l1, m1, n1, o1, p1) (a2, b2, c2, d2, e2, f2, g2, h2, j2, k2, l2, m2, n2, o2, p2)
@@ -297,6 +327,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> f :> g :> h :> j :> k :> l :> m :> n :> o :> p :> Nil
   listToTuple (a :> b :> c :> d :> e :> f :> g :> h :> j :> k :> l :> m :> n :> o :> p :> Nil)
     = (a, b, c, d, e, f, g, h, j, k, l, m, n, o, p)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1, f1, g1, h1, j1, k1, l1, m1, n1, o1, p1, q1) (a2, b2, c2, d2, e2, f2, g2, h2, j2, k2, l2, m2, n2, o2, p2, q2)
@@ -306,6 +338,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> f :> g :> h :> j :> k :> l :> m :> n :> o :> p :> q :> Nil
   listToTuple (a :> b :> c :> d :> e :> f :> g :> h :> j :> k :> l :> m :> n :> o :> p :> q :> Nil)
     = (a, b, c, d, e, f, g, h, j, k, l, m, n, o, p, q)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1, f1, g1, h1, j1, k1, l1, m1, n1, o1, p1, q1, r1) (a2, b2, c2, d2, e2, f2, g2, h2, j2, k2, l2, m2, n2, o2, p2, q2, r2)
@@ -315,6 +349,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> f :> g :> h :> j :> k :> l :> m :> n :> o :> p :> q :> r :> Nil
   listToTuple (a :> b :> c :> d :> e :> f :> g :> h :> j :> k :> l :> m :> n :> o :> p :> q :> r :> Nil)
     = (a, b, c, d, e, f, g, h, j, k, l, m, n, o, p, q, r)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 instance ListTuple
   (a1, b1, c1, d1, e1, f1, g1, h1, j1, k1, l1, m1, n1, o1, p1, q1, r1, s1) (a2, b2, c2, d2, e2, f2, g2, h2, j2, k2, l2, m2, n2, o2, p2, q2, r2, s2)
@@ -324,6 +360,8 @@ instance ListTuple
     = a :> b :> c :> d:> e :> f :> g :> h :> j :> k :> l :> m :> n :> o :> p :> q :> r :> s :> Nil
   listToTuple (a :> b :> c :> d :> e :> f :> g :> h :> j :> k :> l :> m :> n :> o :> p :> q :> r :> s :> Nil)
     = (a, b, c, d, e, f, g, h, j, k, l, m, n, o, p, q, r, s)
+  {-# INLINE tupleToList #-}
+  {-# INLINE listToTuple #-}
 
 type family TupleToList a where
   TupleToList () = '[]
